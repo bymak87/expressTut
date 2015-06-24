@@ -1,6 +1,15 @@
 var express = require('express');
 var app = express();
 
+
+var bodyParser = require('body-parser');
+var parseUrlencoded = bodyParser.urlencoded({extend: false})
+
+var blocksRoute = app.route('/blocks')
+blocksRoute.get(function(request, response){
+
+})
+
 var blocks = {
   'Fixed' : 'Fastened securely in position',
   'Movable' : 'Capable of being moved',
@@ -9,6 +18,11 @@ var blocks = {
 
 var locations = {'Fixed' : 'First floor', 'Movable' : 'Second floor', 'Rotating' : 'Penthouse'};
 
+app.post('/blocks', parseUrlencoded, function (request, response){
+  var newBlock = request.body;
+  blocks[newBlock.name] = newBlock.description;
+  response.status(201).json(newBlock.name);
+});
 
 app.param('name', function (request, response, next){
   var name = request.params.name;
