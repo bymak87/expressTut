@@ -1,60 +1,12 @@
 var express = require('express');
 var app = express();
+var router = express.Router();
 
+app.use(express.static('public'));
 
-var bodyParser = require('body-parser');
-var parseUrlencoded = bodyParser.urlencoded({extend: false})
-
-var blocksRoute = app.route('/blocks')
-blocksRoute.get(function(request, response){
-
-})
-
-var blocks = {
-  'Fixed' : 'Fastened securely in position',
-  'Movable' : 'Capable of being moved',
-  'Rotating' : 'Moving in a circle around its center'
-};
-
-var locations = {'Fixed' : 'First floor', 'Movable' : 'Second floor', 'Rotating' : 'Penthouse'};
-
-app.post('/blocks', parseUrlencoded, function (request, response){
-  var newBlock = request.body;
-  blocks[newBlock.name] = newBlock.description;
-  response.status(201).json(newBlock.name);
-});
-
-app.param('name', function (request, response, next){
-  var name = request.params.name;
-  var block = name[0].toUpperCase() + name.slice(1).toLowerCase();
-
-  request.blockName = block;
-
-  next();
-});
-
-
-app.get('/blocks/:name', function (request, response) {
-
-  var description = blocks[request.blockName];
-
-  if(!description){
-    response.status(404).json('No description found for ' + name);
-  } else {
-    response.json(Object.keys(description));
-  }
-});
-
-app.get('/locations/:name', function (request, response){
-  var location = locations[request.blockName];
-
-  if(!location){
-    response.status(404).json('Nope '+ name + ' does not exist');
-  } else {
-    response.json(location);
-  }
-});
+var blocks = require('./routes/blocks');
+app.use('/blocks', blocks);
 
 app.listen(3000, function (){
-  console.log('Listening on 3000 \n');
+  console.log('running on port 3000');
 });
